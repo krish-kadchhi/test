@@ -2,13 +2,14 @@
 import { cn } from '@/utilities/ui'
 import useClickableCard from '@/utilities/useClickableCard'
 import Link from 'next/link'
-import React, { Fragment } from 'react'
+import React, { Fragment, SetStateAction, useState } from 'react'
 
 import type { Post } from '@/payload-types'
 
 import { Media } from '@/components/Media'
+import { useCart } from '@/providers/CartThings'
 
-export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title'>
+export type CardPostData = Pick<Post, 'slug' | 'categories' | 'meta' | 'title' | 'price'>
 
 export const Card: React.FC<{
   alignItems?: 'center'
@@ -18,16 +19,22 @@ export const Card: React.FC<{
   showCategories?: boolean
   title?: string
 }> = (props) => {
-  const { card, link } = useClickableCard({})
+  // const { card, link } = useClickableCard({})
   const { className, doc, relationTo, showCategories, title: titleFromProps } = props
 
-  const { slug, categories, meta, title } = doc || {}
-  const { description, image: metaImage } = meta || {}
+  const { slug, categories, meta, title, price } = doc || {}
+  const { description, image: metaImage, } = meta || {}
 
   const hasCategories = categories && Array.isArray(categories) && categories.length > 0
   const titleToUse = titleFromProps || title
   const sanitizedDescription = description?.replace(/\s/g, ' ') // replace non-breaking space with white space
   const href = `/${relationTo}/${slug}`
+
+  const { addItem } = useCart()
+
+  function calculate(title: string | null | undefined, price: number | null | undefined) {
+    addItem(title || 'Untitled', price || 0)
+  }
 
   return (
     <article
@@ -35,7 +42,7 @@ export const Card: React.FC<{
         'border border-border rounded-lg overflow-hidden bg-card hover:cursor-pointer',
         className,
       )}
-      ref={card.ref}
+
     >
       <div className="relative w-full ">
         {!metaImage && <div className="">No image</div>}
@@ -58,26 +65,31 @@ export const Card: React.FC<{
                       <Fragment key={index}>
                         {categoryTitle}
                         {!isLast && <Fragment>, &nbsp;</Fragment>}
+                        <button key={index}>Add to cart</button>
                       </Fragment>
+
                     )
                   }
 
                   return null
                 })}
+
               </div>
             )}
           </div>
         )}
+        <button onClick={() => calculate(title, price)}>Add to cart</button>
         {titleToUse && (
           <div className="prose">
             <h3>
-              <Link className="not-prose" href={href} ref={link.ref}>
+              <Link className="not-prose" href={href}>
                 {titleToUse}
               </Link>
             </h3>
           </div>
         )}
         {description && <div className="mt-2">{description && <p>{sanitizedDescription}</p>}</div>}
+        {price && <p>{price}</p>}
       </div>
     </article>
   )

@@ -26,6 +26,7 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import { slugField } from 'payload'
+import { type } from 'os'
 
 export const Posts: CollectionConfig<'posts'> = {
   slug: 'posts',
@@ -99,6 +100,10 @@ export const Posts: CollectionConfig<'posts'> = {
               label: false,
               required: true,
             },
+            {
+              name:"price",
+              type: "number"
+            }
           ],
           label: 'Content',
         },

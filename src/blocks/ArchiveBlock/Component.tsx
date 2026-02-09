@@ -6,7 +6,8 @@ import React from 'react'
 import RichText from '@/components/RichText'
 
 import { CollectionArchive } from '@/components/CollectionArchive'
-
+import { createContext } from 'react'
+import { CartPreview } from './CartPreview'
 export const ArchiveBlock: React.FC<
   ArchiveBlockProps & {
     id?: string
@@ -32,12 +33,12 @@ export const ArchiveBlock: React.FC<
       limit,
       ...(flattenedCategories && flattenedCategories.length > 0
         ? {
-            where: {
-              categories: {
-                in: flattenedCategories,
-              },
+          where: {
+            categories: {
+              in: flattenedCategories,
             },
-          }
+          },
+        }
         : {}),
     })
 
@@ -53,13 +54,18 @@ export const ArchiveBlock: React.FC<
   }
 
   return (
-    <div className="my-16" id={`block-${id}`}>
-      {introContent && (
-        <div className="container mb-16">
-          <RichText className="ms-0 max-w-[48rem]" data={introContent} enableGutter={false} />
-        </div>
-      )}
-      <CollectionArchive posts={posts} />
+    <div className='grid grid-cols-2'>
+      <div className="my-16" id={`block-${id}`}>
+        {introContent && (
+          <div className="container mb-16">
+            <RichText className="ms-0 max-w-[48rem]" data={introContent} enableGutter={false} />
+          </div>
+        )}
+        <CollectionArchive posts={posts} />
+      </div>
+      <div className="h-[200px] w-full max-w-[300px] border rounded-lg overflow-hidden mt-16 self-start">
+        <CartPreview />
+      </div>
     </div>
   )
 }
